@@ -1,5 +1,7 @@
 # StackDeploy (StackDeploy)
 
+![License](https://img.shields.io/badge/License-MIT-FFB300) ![Status](https://img.shields.io/badge/Status-Production_Ready-FFB300) ![Language](https://img.shields.io/badge/Language-JavaScript-FFB300) ![Stack](https://img.shields.io/badge/Stack-Docker_Compose%2FBash-FFB300) ![Platform](https://img.shields.io/badge/Platform-Docker-FFB300)
+
 **Version:** v1.3  
 **Status:** Production Ready  
 **Repository:** https://github.com/OneByJorah/StackDeploy
@@ -262,8 +264,12 @@ Script paths used by the Hermes skill:
 
 MIT
 
+Copyright (c) 2026 JorahOne, LLC
+
 ---
 
 ## Author
 
 Built by **Jhonattan L. Jimenez**.
+
+*Built by [JorahOne, LLC](https://github.com/JorahOne-Services) — ...*
