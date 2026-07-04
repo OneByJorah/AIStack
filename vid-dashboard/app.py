@@ -1,14 +1,19 @@
 """VIDE IT ai - Simple RAG Backend"""
-import os, json, uuid, shutil, hashlib, secrets
-from pathlib import Path
+import hashlib
+import json
+import os
+import secrets
+import shutil
+import uuid
 from datetime import datetime
+from pathlib import Path
 
-from fastapi import FastAPI, UploadFile, File, Form, Request, HTTPException
-from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
-from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-import httpx
 import chromadb
+import httpx
+from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse, RedirectResponse
+from pydantic import BaseModel
 from sentence_transformers import SentenceTransformer
 
 # Paths
