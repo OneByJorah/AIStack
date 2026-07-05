@@ -237,13 +237,13 @@ Local install path for Hermes:
 Inline commands Hermes uses with this stack:
 ```bash
 # Health
-cd /home/j1admin/StackDeploy && bash tests/smoke.sh
+cd /path/to/StackDeploy && bash tests/smoke.sh
 
 # JSON search
 curl -s 'http://localhost:8080/search?format=json&q=<query>&language=en'
 
 # Browser automation
-cd /home/j1admin/StackDeploy/browser-search && node scripts/cloak/cloak-fetch.mjs "https://example.com"
+cd /path/to/StackDeploy/browser-search && node scripts/cloak/cloak-fetch.mjs "https://example.com"
 ```
 
 Docs:
