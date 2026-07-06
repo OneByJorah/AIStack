@@ -28,15 +28,14 @@ This is a CLI/backend-only tool. No screenshots available.
 
 ## ✨ Features
 
-- **Unified Stack** — All AI services in one Docker Compose deployment
-- **LLM Routing** — LiteLLM for OpenAI-compatible API routing across multiple providers
+- **CPU Base Stack** — SearXNG, Camofox, Obsidian, Qdrant, Honcho, and VIDE IT ai in one Docker Compose deployment
 - **Private Search** — SearXNG metasearch engine with privacy-first design
 - **Vector Storage** — Qdrant for semantic memory and embeddings
-- **Browser Automation** — Browser search with stealth capabilities
-- **Obsidian Integration** — Note-taking with markdown skills
-- **Cost Tracking** — CostForge dashboard for API usage and pricing
-- **Video Analytics** — Media monitoring dashboard
-- **Auto HTTPS** — Caddy reverse proxy with automatic TLS certificates
+- **Browser Automation** — Camofox browser automation with REST API
+- **Long-Term Memory** — Honcho namespaced memory layer (PostgreSQL + pgvector + Redis)
+- **Document RAG** — VIDE IT ai dashboard for document Q&A with ChromaDB + Sentence Transformers
+- **Obsidian Integration** — Markdown-backed note-taking via web UI
+- **Planned: GPU Inference Layer** — llama-server, Ollama, LiteLLM, Open WebUI, CostForge, Caddy (configs exist, coming soon)
 
 ## 🚀 Quick Start
 
@@ -56,45 +55,58 @@ docker compose up -d
 
 ## 🏗️ Services
 
+### Current Stack (in docker-compose.yml)
+
+| Service | Port | Description |
+|---------|------|-------------|
+| **SearXNG** | 8080 | Private meta-search engine |
+| **Camofox** | 9377 | Stealth browser automation |
+| **Obsidian** | 8083 | Markdown-backed note-taking |
+| **Qdrant** | 6333 | Vector database for embeddings |
+| **Honcho API** | 8081 | Long-term memory layer (namespaced) |
+| **VIDE IT ai** | 8123 | Document RAG dashboard |
+
+### Planned Services (configs exist, not yet wired)
+
 | Service | Port | Description |
 |---------|------|-------------|
 | **LiteLLM** | 4000 | OpenAI-compatible LLM routing proxy |
-| **SearXNG** | 8080 | Private meta-search engine |
-| **Qdrant** | 6333 | Vector database for embeddings |
-| **browser-search** | 3000 | Stealth browser automation |
-| **CostForge** | 5000 | API cost estimation dashboard |
-| **vid-dashboard** | 5001 | Video/media analytics |
-| **Obsidian Skills** | — | Note-taking integration |
+| **browser-search** | 9377 | Stealth browser automation |
+| **CostForge** | 8090 | API cost estimation dashboard |
 | **Caddy** | 80/443 | Reverse proxy with auto-TLS |
 
 ## 🏗️ Architecture
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│                   JorahOne AI Stack                      │
-│                                                          │
-│  User ──▶ Caddy (Proxy) ──▶ LiteLLM (API Router)       │
-│               │                    │                      │
-│               ├── SearXNG ◀────────┤                      │
-│               ├── Qdrant ◀────────┤                      │
-│               ├── browser-search ◀┤                      │
-│               ├── CostForge ◀─────┤                      │
-│               └── vid-dashboard ◀─┤                      │
-│                                                          │
-│  ┌────────────┐  ┌────────────┐  ┌──────────────────┐   │
-│  │  Ollama    │  │  OpenAI   │  │  Anthropic        │   │
-│  │  (local)   │  │  (cloud)  │  │  (cloud)          │   │
-│  └────────────┘  └────────────┘  └──────────────────┘   │
-└─────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────┐
+│                 JorahOne AI Stack                    │
+│                    (CPU Base Stack)                   │
+│                                                      │
+│  User ──▶ SearXNG (8080)  ── Private search          │
+│       ──▶ Camofox (9377)  ── Browser automation      │
+│       ──▶ Obsidian (8083) ── Note-taking             │
+│       ──▶ Qdrant (6333)   ── Vector store            │
+│       ──▶ Honcho (8081)   ── Long-term memory       │
+│       ──▶ VIDE IT ai (8123) ── Document RAG         │
+│                                                      │
+│  ┌──────────────────────────────────────────────┐    │
+│  │  Planned: GPU Inference Layer (coming soon)  │    │
+│  │  llama-server · Ollama · LiteLLM · Open WebUI│    │
+│  │  CostForge · Caddy                           │    │
+│  └──────────────────────────────────────────────┘    │
+└─────────────────────────────────────────────────────┘
 ```
 
 ## 🔧 Environment Variables
 
 | Variable | Description | Required |
 |----------|-------------|----------|
-| `LITELLM_API_KEY` | API key for LiteLLM | Yes |
-| `SEARXNG_SECRET_KEY` | SearXNG secret key | Yes |
-| `QDRANT_API_KEY` | Qdrant API key | Optional |
+| `SERVER_IP` | Tailscale IP of this server | Yes |
+| `OBSIDIAN_VAULT_PATH` | Host path for Obsidian vault | No (default: ./obsidian-vault) |
+| `HONCHO_TOKEN` | Auth token for Honcho API | Optional |
+| `HONCHO_DB_PASSWORD` | Postgres password for Honcho DB | Yes |
+| `CAMOFOX_API_KEY` | API key for Camofox browser | Optional |
+| `CAMOFOX_ADMIN_KEY` | Admin key for Camofox browser | Optional |
 
 ## 🔒 Security
 
