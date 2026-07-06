@@ -6,3 +6,4 @@ sentence-transformers
 chromadb
 pypdf
 python-docx
+bcrypt

@@ -1,13 +1,13 @@
 """VIDE IT ai - Simple RAG Backend"""
-import hashlib
 import json
 import os
 import secrets
 import shutil
 import uuid
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 
+import bcrypt
 import chromadb
 import httpx
 from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
@@ -28,7 +28,10 @@ for p in [DOCS, CHROMA, DB_PATH]:
 
 # Auth helpers
 def _hash(pw):
-    return hashlib.sha256(pw.encode()).hexdigest()
+    return bcrypt.hashpw(pw.encode(), bcrypt.gensalt()).decode()
+
+def _verify(pw, hashed):
+    return bcrypt.checkpw(pw.encode(), hashed.encode())
 
 def _load_users():
     if not USERS_FILE.exists():
@@ -59,8 +62,21 @@ def get_user(request):
     if not sid:
         return None
     users = _load_users()
+    now = datetime.utcnow()
     for u in users.values():
         if u.get("session") == sid and u.get("active", True):
+            # Check session expiry (24 hours)
+            created = u.get("session_created")
+            if created:
+                try:
+                    created_dt = datetime.fromisoformat(created)
+                    if now - created_dt > timedelta(hours=24):
+                        u.pop("session", None)
+                        u.pop("session_created", None)
+                        _save_users(users)
+                        return None
+                except (ValueError, TypeError):
+                    pass
             return u
     return None
 
@@ -152,11 +168,12 @@ async def login_page(request: Request, next: str = "/"):
 async def do_login(request: Request, username: str = Form(...), password: str = Form(...), next: str = Form("/")):
     users = ensure_admin()
     u = users.get(username)
-    if not u or u.get("pw") != _hash(password) or not u.get("active", True):
+    if not u or not _verify(password, u.get("pw", "")) or not u.get("active", True):
         return HTMLResponse(LOGIN_HTML, status_code=401)
     sid = secrets.token_hex(16)
     u = dict(u)
     u["session"] = sid
+    u["session_created"] = datetime.utcnow().isoformat()
     users[username] = u
     _save_users(users)
     resp = RedirectResponse(next if next.startswith("/") else "/", status_code=303)
