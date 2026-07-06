@@ -352,6 +352,12 @@ async def dashboard(request: Request):
         const fileInput = document.getElementById('fileInput');
         const uploadBtn = document.getElementById('uploadBtn');
         
+        function escapeHtml(s) {{
+            const div = document.createElement('div');
+            div.textContent = s;
+            return div.innerHTML;
+        }}
+        
         dropZone.onclick = () => fileInput.click();
         dropZone.ondragover = (e) => {{ e.preventDefault(); dropZone.classList.add('dragover'); }};
         dropZone.ondragleave = () => dropZone.classList.remove('dragover');
@@ -393,7 +399,7 @@ async def dashboard(request: Request):
             const q = document.getElementById('question').value.trim();
             if (!q) return;
             const chat = document.getElementById('chatWindow');
-            chat.innerHTML += `<div class="chat-bubble user">${{q}}</div>`;
+            chat.innerHTML += `<div class="chat-bubble user">${escapeHtml(q)}</div>`;
             document.getElementById('question').value = '';
             
             try {{
@@ -403,7 +409,7 @@ async def dashboard(request: Request):
                     body: JSON.stringify({{ question: q, top_k: parseInt(document.getElementById('topK').value) || 4 }})
                 }});
                 const data = await r.json();
-                chat.innerHTML += `<div class="chat-bubble assistant"><strong>VIDE IT ai:</strong><br>${{data.answer}}</div>`;
+                chat.innerHTML += `<div class="chat-bubble assistant"><strong>VIDE IT ai:</strong><br>${escapeHtml(data.answer)}</div>`;
                 if (data.sources && data.sources.length) {{
                     chat.innerHTML += `<div class="chat-bubble system">Sources: ${{data.sources.map(s => s.title || s.filename).join(', ')}}</div>`;
                 }}
