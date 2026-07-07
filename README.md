@@ -22,6 +22,10 @@
 
 ---
 
+## 📸 Screenshot
+
+This is a CLI/backend-only tool. No screenshots available.
+
 ## ✨ Features
 
 - **Unified Stack** — All AI services in one Docker Compose deployment
