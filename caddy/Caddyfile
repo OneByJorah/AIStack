@@ -1,4 +1,4 @@
-# JorahOne AI Stack — reverse proxy
+# AIStack — reverse proxy
 # Bind these hostnames to your Mesh-VPN machine name / MagicDNS,
 # or replace with your own Mesh-VPN hostname (run `mesh-vpn status` to confirm).
 # TLS is handled by Mesh-VPN itself (mesh-vpn cert) if you front with HTTPS;
