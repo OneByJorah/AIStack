@@ -1,4 +1,4 @@
-# AUDIT_REPORT - jorahone-ai-stack
+# AUDIT_REPORT - AIStack
 **Date:** 2026-07-05
 **Score:** 60/100 - DEGRADED
 - Multi-module AI infrastructure stack

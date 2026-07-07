@@ -1,4 +1,4 @@
-# jorahone-ai-stack — Fixes and Enhancements
+# AIStack — Fixes and Enhancements
 
 ## Changes Made
 
