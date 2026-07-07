@@ -9,7 +9,7 @@
 <br>
 
 <div align="center">
-  <h1>🧠 JorahOne AI Stack</h1>
+  <h1>🧠 AIStack</h1>
   <p><strong>Unified AI Infrastructure Stack</strong></p>
   <p>One-command Docker Compose deployment for LLM routing, web search, vector storage, browser automation, and cost tracking</p>
   <p>
@@ -46,8 +46,8 @@ This is a CLI/backend-only tool. No screenshots available.
 ### Installation
 
 ```bash
-git clone https://github.com/OneByJorah/jorahone-ai-stack.git
-cd jorahone-ai-stack
+git clone https://github.com/OneByJorah/AIStack.git
+cd AIStack
 cp .env.example .env
 # Edit .env with your configuration
 docker compose up -d
@@ -79,7 +79,7 @@ docker compose up -d
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│                 JorahOne AI Stack                    │
+│                     AIStack                          │
 │                    (CPU Base Stack)                   │
 │                                                      │
 │  User ──▶ SearXNG (8080)  ── Private search          │

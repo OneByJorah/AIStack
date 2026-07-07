@@ -1,4 +1,4 @@
-# JorahOne AI Stack — reverse proxy
+# AIStack — reverse proxy
 # Bind these hostnames to your Tailscale machine name / MagicDNS,
 # or replace with your own Tailscale hostname (run `tailscale status` to confirm).
 # TLS is handled by Tailscale itself (tailscale cert) if you front with HTTPS;

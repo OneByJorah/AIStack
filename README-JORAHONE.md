@@ -1,4 +1,4 @@
-# JorahOne AI Stack
+# AIStack
 
 Single-node self-hosted AI stack for a GTX 3060 (12GB VRAM) / 30GB RAM Ubuntu box.
 
@@ -49,7 +49,7 @@ Notion replaces Standard Notes as an **API integration**, not a container — se
 
 ```bash
 git clone <this-repo>
-cd jorahone-ai-stack
+cd AIStack
 cp .env.example .env        # fill in passwords/keys
 ./scripts/download-models.sh
 docker compose up -d
