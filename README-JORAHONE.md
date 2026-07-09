@@ -57,25 +57,25 @@ docker compose up -d
 
 Then:
 
-1. Open WebUI: `http://<tailscale-ip>:3000` — create accounts for team members.
+1. Open WebUI: `http://<mesh-vpn-ip>:3000` — create accounts for team members.
 2. Verify Hermes: `curl http://localhost:8081/v1/models`
 3. Pull the team model if the script didn't auto-pull:
    `docker exec ollama ollama pull qwen2.5:7b-instruct-q4_K_M`
 4. Confirm LiteLLM sees both: `curl http://localhost:4000/v1/models -H "Authorization: Bearer $LITELLM_MASTER_KEY"`
 
-## Tailscale
+## Mesh-VPN
 
-All ports above are meant to be reached over your tailnet only — don't expose
-them publicly. Bind Caddy to your Tailscale hostname (`tailscale status` to find
+All ports above are meant to be reached over your mesh only — don't expose
+them publicly. Bind Caddy to your Mesh-VPN hostname (`mesh-vpn status` to find
 it) and use MagicDNS so `http://<machine-name>:3000` works from any device on
-your tailnet.
+your mesh.
 
 ## Requirements
 
 - NVIDIA Container Toolkit installed (`nvidia-ctk` configured for Docker)
 - Docker + Docker Compose v2
 - ~10GB disk for the Hermes GGUF, more for Ollama model cache
-- Tailscale running on the host
+- Mesh-VPN running on the host
 
 ## Notes
 

@@ -51,7 +51,7 @@ The team model only loads into the remaining ~2.8 GB headroom on demand. If both
 
 ### Network Topology (planned)
 
-All ports are reachable only over the tailnet (Tailscale). Caddy binds to the Tailscale hostname. No public exposure.
+All ports are reachable only over the mesh (Mesh-VPN). Caddy binds to the Mesh-VPN hostname. No public exposure.
 
 ---
 
@@ -63,7 +63,7 @@ JorahOne needed a **reproducible, single-command AI infrastructure stack** that 
 
 1. **Two-tier inference** — An always-on agent backend (Hermes) that never goes cold, plus an on-demand team backend that doesn't permanently consume VRAM.
 2. **Unified API surface** — Downstream services shouldn't care which engine answers. LiteLLM provides a single OpenAI-compatible endpoint.
-3. **Private infrastructure** — No data leaves the tailnet. Search (SearXNG), browsing (Camofox), memory (Honcho), and notes (Obsidian) are all self-hosted.
+3. **Private infrastructure** — No data leaves the mesh. Search (SearXNG), browsing (Camofox), memory (Honcho), and notes (Obsidian) are all self-hosted.
 4. **Cost visibility** — CostForge tracks inference spend across Hermes, OpenRouter, and Telegram.
 5. **Document RAG** — VIDE IT ai provides a simple document Q&A portal for non-technical team members.
 
@@ -102,7 +102,7 @@ Evidence:
 - **CPU base stack is operational** — SearXNG, Camofox, Obsidian, Qdrant, Honcho, and VIDE IT ai are all wired into `docker-compose.yml` with health checks, restart policies, and init scripts.
 - **GPU inference layer is incomplete** — llama-server, Ollama, LiteLLM, Open WebUI, CostForge, and Caddy have config files and Dockerfiles but are **not in the compose file**. The stack cannot be deployed as a full AI stack with a single `docker compose up -d`.
 - **Health checks** exist on all compose services (SearXNG, Camofox, Obsidian, Honcho DB, Honcho Redis, Honcho).
-- **Smoke tests** exist (`tests/smoke.sh`) but reference hardcoded paths (`/home/j1admin/StackDeploy`) and services (Chrome CDP on 9222) that don't match the current compose file.
+- **Smoke tests** exist (`tests/smoke.sh`) but reference hardcoded paths (`/home/<user>/StackDeploy`) and services (Chrome CDP on 9222) that don't match the current compose file.
 - **CI/CD** — CodeQL workflow configured for Python, JavaScript, and TypeScript. Dependabot configured for pip, npm, docker, and GitHub Actions.
 - **Security audit** — One audit commit (`85b87f9`) sanitized email and path references.
 - **Community files** — CODE_OF_CONDUCT, CONTRIBUTING, SECURITY, LICENSE (MIT) all present.
@@ -111,7 +111,7 @@ Evidence:
 
 Sub-classifications:
 - **Automation** — Bootstrap scripts, health checks, smoke tests, Hermes skill integration.
-- **Security** — Tailscale-only networking pattern (documented), secrets via `.env`, SearXNG configured as non-public instance.
+- **Security** — Mesh-VPN-only networking pattern (documented), secrets via `.env`, SearXNG configured as non-public instance.
 - **Observability** — Health check scripts, smoke tests, Docker health checks on every service.
 - **Experimental** — VIDE IT ai dashboard (simple RAG, early-stage), Camofox browser automation.
 
@@ -121,7 +121,7 @@ Sub-classifications:
 
 1. **Two-tier inference on one GPU** — llama-server always-on, Ollama cold-loads on demand. Solves VRAM contention without requiring a second machine. (Planned — not yet wired.)
 2. **LiteLLM as unified router** — All downstream services talk to one endpoint. Adding new models means editing `litellm/config.yaml` only. (Planned — config exists, service not in compose.)
-3. **Tailscale-only networking** — No public ports. Caddy binds to Tailscale hostname. TLS handled by Tailscale certs. (Planned — Caddyfile exists, Caddy not in compose.)
+3. **Mesh-VPN-only networking** — No public ports. Caddy binds to Mesh-VPN hostname. TLS handled by Mesh-VPN certs. (Planned — Caddyfile exists, Caddy not in compose.)
 4. **Honcho over mem0** — Deliberate choice to stay on Honcho for namespaced long-term memory.
 5. **CostForge built from source** — Cloned fresh from `OneByJorah/CostForge` at build time, no upstream Dockerfile required. (Dockerfile exists, service not in compose.)
 6. **CPU-first base stack** — The StackDeploy component (SearXNG, Camofox, Obsidian, Qdrant, Honcho) runs on CPU-only hosts. GPU is only needed for the inference backends.
@@ -229,7 +229,7 @@ Sub-classifications:
 
 3. **README.md port mismatch** — The main `README.md` lists browser-search on port 3000, CostForge on 5000, and vid-dashboard on 5001. The actual compose file has no browser-search service, no CostForge service, and vid-dashboard on 8123.
 
-4. **Smoke test path mismatch** — `tests/smoke.sh` uses hardcoded paths (`/home/j1admin/StackDeploy`) and references Chrome CDP on port 9222 (no such service in compose).
+4. **Smoke test path mismatch** — `tests/smoke.sh` uses hardcoded paths (`/home/<user>/StackDeploy`) and references Chrome CDP on port 9222 (no such service in compose).
 
 5. **Dependabot ecosystem mismatch** — Dependabot is configured for `pip` and `npm` at root `/`, but there is no `requirements.txt` or `package.json` at the repo root. The `pip` config should point to `vid-dashboard/` and the `npm` config to `browser-search/`. These are template vestiges from the StackDeploy upstream.
 
