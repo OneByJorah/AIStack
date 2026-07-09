@@ -101,7 +101,7 @@ docker compose up -d
 
 | Variable | Description | Required |
 |----------|-------------|----------|
-| `SERVER_IP` | Tailscale IP of this server | Yes |
+| `SERVER_IP` | Mesh-VPN IP of this server | Yes |
 | `OBSIDIAN_VAULT_PATH` | Host path for Obsidian vault | No (default: ./obsidian-vault) |
 | `HONCHO_TOKEN` | Auth token for Honcho API | Optional |
 | `HONCHO_DB_PASSWORD` | Postgres password for Honcho DB | Yes |

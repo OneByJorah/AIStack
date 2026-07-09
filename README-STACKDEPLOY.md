@@ -96,7 +96,7 @@ docker compose up -d
 
 | Variable | Purpose | Notes |
 |---|---|---|
-| `SERVER_IP` | Tailscale or local IP used in docs/examples | Required |
+| `SERVER_IP` | Mesh-VPN or local IP used in docs/examples | Required |
 | `HONCHO_TOKEN` | Auth token for Honcho API | Optional |
 | `HONCHO_DB_PASSWORD` | Postgres password for Honcho backend | Required |
 | `OBSIDIAN_VAULT_PATH` | Host path for the Obsidian vault | Optional |
@@ -237,13 +237,13 @@ Local install path for Hermes:
 Inline commands Hermes uses with this stack:
 ```bash
 # Health
-cd /home/j1admin/StackDeploy && bash tests/smoke.sh
+cd /home/<user>/StackDeploy && bash tests/smoke.sh
 
 # JSON search
 curl -s 'http://localhost:8080/search?format=json&q=<query>&language=en'
 
 # Browser automation
-cd /home/j1admin/StackDeploy/browser-search && node scripts/cloak/cloak-fetch.mjs "https://example.com"
+cd /home/<user>/StackDeploy/browser-search && node scripts/cloak/cloak-fetch.mjs "https://example.com"
 ```
 
 Docs:
