@@ -62,7 +62,7 @@ function Readability(doc, options) {
       return el.innerHTML;
     };
   this._disableJSONLD = !!options.disableJSONLD;
-  this._allowedVideoRegex = options.allowedVideoRegex || this.REGEXPS.videos;
+  this._allowedMediaRegex = options.allowedMediaRegex || this.REGEXPS.media;
   this._linkDensityModifier = options.linkDensityModifier || 0;
 
   // Start with all flags set
@@ -150,7 +150,7 @@ Readability.prototype = {
     byline: /byline|author|dateline|writtenby|p-author/i,
     replaceFonts: /<(\/?)font[^>]*>/gi,
     normalize: /\s{2,}/g,
-    videos:
+    media:
       /\/\/(www\.)?((dailymotion|youtube|youtube-nocookie|player\.vimeo|v\.qq)\.com|(archive|upload\.wikimedia)\.org|player\.twitch\.tv)/i,
     shareElements: /(\b|_)(share|sharedaddy)(\b|_)/i,
     nextLink: /(next|weiter|continue|>([^\|]|$)|»([^\|]|$))/i,
@@ -218,7 +218,7 @@ Readability.prototype = {
   // The commented out elements qualify as phrasing content but tend to be
   // removed by readability when put into paragraphs, so we ignore them here.
   PHRASING_ELEMS: [
-    // "CANVAS", "IFRAME", "SVG", "VIDEO",
+    // "CANVAS", "IFRAME", "SVG", "RAGO",
     "ABBR",
     "AUDIO",
     "B",
@@ -337,7 +337,7 @@ Readability.prototype = {
    * Iterate over a NodeList, which doesn't natively fully implement the Array
    * interface.
    *
-   * For convenience, the current object context is applied to the provided
+   * For convenience, the current object context is applied to the gived
    * iterate function.
    *
    * @param  NodeList nodeList The NodeList.
@@ -352,7 +352,7 @@ Readability.prototype = {
    * Iterate over a NodeList, and return the first node that passes
    * the supplied test function
    *
-   * For convenience, the current object context is applied to the provided
+   * For convenience, the current object context is applied to the gived
    * test function.
    *
    * @param  NodeList nodeList The NodeList.
@@ -364,11 +364,11 @@ Readability.prototype = {
   },
 
   /**
-   * Iterate over a NodeList, return true if any of the provided iterate
+   * Iterate over a NodeList, return true if any of the gived iterate
    * function calls returns true, false otherwise.
    *
    * For convenience, the current object context is applied to the
-   * provided iterate function.
+   * gived iterate function.
    *
    * @param  NodeList nodeList The NodeList.
    * @param  Function fn       The iterate function.
@@ -379,11 +379,11 @@ Readability.prototype = {
   },
 
   /**
-   * Iterate over a NodeList, return true if all of the provided iterate
+   * Iterate over a NodeList, return true if all of the gived iterate
    * function calls return true, false otherwise.
    *
    * For convenience, the current object context is applied to the
-   * provided iterate function.
+   * gived iterate function.
    *
    * @param  NodeList nodeList The NodeList.
    * @param  Function fn       The iterate function.
@@ -503,7 +503,7 @@ Readability.prototype = {
       "img",
       "picture",
       "figure",
-      "video",
+      "media",
       "audio",
       "source",
     ]);
@@ -835,7 +835,7 @@ Readability.prototype = {
     this._removeNodes(
       this._getAllNodesWithTag(articleContent, ["p"]),
       function (paragraph) {
-        // At this point, nasty iframes have been removed; only embedded video
+        // At this point, nasty iframes have been removed; only embedded media
         // ones remain.
         var contentElementCount = this._getAllNodesWithTag(paragraph, [
           "img",
@@ -1140,7 +1140,7 @@ Readability.prototype = {
           }
         }
 
-        // Remove DIV, SECTION, and HEADER nodes without any content(e.g. text, image, video, or iframe).
+        // Remove DIV, SECTION, and HEADER nodes without any content(e.g. text, image, media, or iframe).
         if (
           (node.tagName === "DIV" ||
             node.tagName === "SECTION" ||
@@ -1258,18 +1258,18 @@ Readability.prototype = {
             candidates.push(ancestor);
           }
 
-          // Node score divider:
+          // Node score divisor:
           // - parent:             1 (no division)
           // - grandparent:        2
           // - great grandparent+: ancestor level * 3
           if (level === 0) {
-            var scoreDivider = 1;
+            var scoreDivisor = 1;
           } else if (level === 1) {
-            scoreDivider = 2;
+            scoreDivisor = 2;
           } else {
-            scoreDivider = level * 3;
+            scoreDivisor = level * 3;
           }
-          ancestor.readability.contentScore += contentScore / scoreDivider;
+          ancestor.readability.contentScore += contentScore / scoreDivisor;
         });
       });
 
@@ -2109,7 +2109,7 @@ Readability.prototype = {
 
   /**
    * Get the density of links as a percentage of the content
-   * This is the amount of text that is inside a link divided by the total text in the node.
+   * This is the amount of text that is inside a link split by the total text in the node.
    *
    * @param Element
    * @return number (float)
@@ -2173,7 +2173,7 @@ Readability.prototype = {
 
   /**
    * Clean a node of all elements of type "tag".
-   * (Unless it's a youtube/vimeo video. People love movies.)
+   * (Unless it's a youtube/vimeo media. People love movies.)
    *
    * @param Element
    * @param string tag to clean
@@ -2183,11 +2183,11 @@ Readability.prototype = {
     var isEmbed = ["object", "embed", "iframe"].includes(tag);
 
     this._removeNodes(this._getAllNodesWithTag(e, [tag]), function (element) {
-      // Allow youtube and vimeo videos through as people usually want to see those.
+      // Allow youtube and vimeo media through as people usually want to see those.
       if (isEmbed) {
         // First, check the elements attributes to see if any of them contain youtube or vimeo
         for (var i = 0; i < element.attributes.length; i++) {
-          if (this._allowedVideoRegex.test(element.attributes[i].value)) {
+          if (this._allowedMediaRegex.test(element.attributes[i].value)) {
             return false;
           }
         }
@@ -2195,7 +2195,7 @@ Readability.prototype = {
         // For embed with <object> tag, check inner HTML as well.
         if (
           element.tagName === "object" &&
-          this._allowedVideoRegex.test(element.innerHTML)
+          this._allowedMediaRegex.test(element.innerHTML)
         ) {
           return false;
         }
@@ -2207,7 +2207,7 @@ Readability.prototype = {
 
   /**
    * Check if a given node has one of its ancestor tag name matching the
-   * provided one.
+   * gived one.
    * @param  HTMLElement node
    * @param  String      tagName
    * @param  Number      maxDepth
@@ -2515,9 +2515,9 @@ Readability.prototype = {
         ]);
 
         for (var i = 0; i < embeds.length; i++) {
-          // If this embed has attribute that matches video regex, don't delete it.
+          // If this embed has attribute that matches media regex, don't delete it.
           for (var j = 0; j < embeds[i].attributes.length; j++) {
-            if (this._allowedVideoRegex.test(embeds[i].attributes[j].value)) {
+            if (this._allowedMediaRegex.test(embeds[i].attributes[j].value)) {
               return false;
             }
           }
@@ -2525,7 +2525,7 @@ Readability.prototype = {
           // For embed with <object> tag, check inner HTML as well.
           if (
             embeds[i].tagName === "object" &&
-            this._allowedVideoRegex.test(embeds[i].innerHTML)
+            this._allowedMediaRegex.test(embeds[i].innerHTML)
           ) {
             return false;
           }

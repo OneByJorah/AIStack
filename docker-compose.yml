@@ -113,16 +113,16 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
-  # --- VIDE IT ai dashboard ---
-  vidi-dashboard:
+  # --- RAG Dashboard ---
+  rag-dashboard:
     build:
-      context: ./vid-dashboard
+      context: ./rag-dashboard
       dockerfile: Dockerfile
-    container_name: vidi-dashboard
+    container_name: rag-dashboard
     ports:
       - "8123:8123"
     volumes:
-      - ~/.vide-it-ai:/app/data
+      - ~/.rag-ai-data:/app/data
     restart: unless-stopped
 
 volumes:

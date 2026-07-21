@@ -28,7 +28,7 @@
 
 ## Overview
 
-StackDeploy is a Docker Compose-based self-hosted stack for Hermes Agents. It consolidates local web search, long-term memory, browser automation, vector storage, and Obsidian note-taking into a reproducible, one-command deployment. The stack is designed to run on CPU-only hosts with no local GPU, while keeping the LLM layer intentionally external so you can plug in free cloud providers.
+StackDeploy is a Docker Compose-based self-hosted stack for Hermes Agents. It consolidates local web search, long-term memory, browser automation, vector storage, and Obsidian note-taking into a reproducible, one-command deployment. The stack is designed to run on CPU-only hosts with no local GPU, while keeping the LLM layer intentionally external so you can plug in free cloud sources.
 
 Bundled integrations:
 - **browser-search**: SearXNG + Camofox + CloakBrowser for search and protected-site browsing
@@ -40,7 +40,7 @@ Secrets and environment configuration are managed via `docker-compose.yml` and `
 
 ## Architecture
 
-Client → Hermes Agent → Local services (SearXNG, Camofox, Qdrant, Obsidian, PostgreSQL + Redis) → optional upstream LLM provider via Hermes config.
+Client → Hermes Agent → Local services (SearXNG, Camofox, Qdrant, Obsidian, PostgreSQL + Redis) → optional upstream LLM source via Hermes config.
 
 ---
 

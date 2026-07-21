@@ -1,4 +1,4 @@
-"""VIDE IT ai - Simple RAG Backend"""
+"""RAG Dashboard - Simple RAG Backend"""
 import json
 import os
 import secrets
@@ -17,7 +17,7 @@ from pydantic import BaseModel
 from sentence_transformers import SentenceTransformer
 
 # Paths
-ROOT = Path.home() / ".vide-it-ai"
+ROOT = Path.home() / ".rag-ai-data"
 DOCS = ROOT / "documents"
 CHROMA = ROOT / "chromadb"
 DB_PATH = CHROMA / "db"
@@ -58,7 +58,7 @@ def ensure_admin():
     return users
 
 def get_user(request):
-    sid = request.cookies.get("vide_session")
+    sid = request.cookies.get("rag_session")
     if not sid:
         return None
     users = _load_users()
@@ -88,16 +88,16 @@ def require_user(request):
 
 # ChromaDB
 client = chromadb.PersistentClient(path=str(DB_PATH))
-collection = client.get_or_create_collection("vide_knowledge", metadata={"hnsw:space": "cosine"})
+collection = client.get_or_create_collection("rag_knowledge", metadata={"hnsw:space": "cosine"})
 
 # Embeddings
 embedder = SentenceTransformer("all-MiniLM-L6-v2")
 
 # Ollama
 OLLAMA_URL = os.environ.get("OLLAMA_URL", "http://localhost:11434")
-MODEL = os.environ.get("VIDE_MODEL", "vide-ai")
+MODEL = os.environ.get("RAG_MODEL", "rag-assistant")
 
-app = FastAPI(title="VIDE IT ai")
+app = FastAPI(title="RAG Dashboard")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=os.environ.get("CORS_ORIGINS", "").split(",") if os.environ.get("CORS_ORIGINS") else ["*"],
@@ -127,7 +127,7 @@ class Query(BaseModel):
 LOGIN_HTML = """<!DOCTYPE html>
 <html>
 <head>
-    <title>VIDE IT ai - Login</title>
+    <title>RAG Dashboard - Login</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: linear-gradient(135deg, #4f46e5, #7c3aed); min-height: 100vh; display: flex; align-items: center; justify-content: center; }
@@ -144,7 +144,7 @@ LOGIN_HTML = """<!DOCTYPE html>
 </head>
 <body>
     <div class="card">
-        <h1>VIDE IT ai</h1>
+        <h1>RAG Dashboard</h1>
         <p>Login to the management portal</p>
         <div class="error">Invalid credentials</div>
         <form method="post" action="/login">
@@ -177,19 +177,19 @@ async def do_login(request: Request, username: str = Form(...), password: str = 
     users[username] = u
     _save_users(users)
     resp = RedirectResponse(next if next.startswith("/") else "/", status_code=303)
-    resp.set_cookie("vide_session", sid, httponly=True)
+    resp.set_cookie("rag_session", sid, httponly=True)
     return resp
 
 @app.post("/logout")
 async def do_logout():
     resp = RedirectResponse("/login", status_code=303)
-    resp.delete_cookie("vide_session")
+    resp.delete_cookie("rag_session")
     return resp
 
 @app.get("/logout")
 async def logout_get():
     resp = RedirectResponse("/login", status_code=303)
-    resp.delete_cookie("vide_session")
+    resp.delete_cookie("rag_session")
     return resp
 
 # =================== DASHBOARD ===================
@@ -208,7 +208,7 @@ async def dashboard(request: Request):
     return HTMLResponse(f"""<!DOCTYPE html>
 <html>
 <head>
-    <title>VIDE IT ai - Dashboard</title>
+    <title>RAG Dashboard - Dashboard</title>
     <style>
         * {{ box-sizing: border-box; margin: 0; padding: 0; }}
         body {{ font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: #f8fafc; }}
@@ -261,11 +261,11 @@ async def dashboard(request: Request):
     <div class="header">
         <div class="header-content">
             <div>
-                <h1>VIDE IT ai</h1>
+                <h1>RAG Dashboard</h1>
                 <p>Document knowledge base and AI assistant</p>
             </div>
             <div style="display: flex; align-items: center; gap: 12px;">
-                <span class="badge" id="modelBadge">vide-ai · 64k ctx</span>
+                <span class="badge" id="modelBadge">rag-assistant · 64k ctx</span>
                 <form method="post" action="/logout" style="display: inline;">
                     <button class="btn btn-sm" type="submit">Logout</button>
                 </form>
@@ -285,7 +285,7 @@ async def dashboard(request: Request):
             </div>
             <div class="stat">
                 <div class="stat-label">Model</div>
-                <div class="stat-value" style="font-size: 22px;" id="statModel">vide-ai</div>
+                <div class="stat-value" style="font-size: 22px;" id="statModel">rag-assistant</div>
             </div>
         </div>
     </div>
@@ -315,7 +315,7 @@ async def dashboard(request: Request):
             
             <!-- Chat Section -->
             <div class="card">
-                <h2>Chat with VIDE IT ai</h2>
+                <h2>Chat with RAG Dashboard</h2>
                 <div class="chat-window" id="chatWindow">
                     <div class="chat-bubble system">Welcome! Upload documents and ask questions. Context will be retrieved from your knowledge base.</div>
                 </div>
@@ -409,7 +409,7 @@ async def dashboard(request: Request):
                     body: JSON.stringify({{ question: q, top_k: parseInt(document.getElementById('topK').value) || 4 }})
                 }});
                 const data = await r.json();
-                chat.innerHTML += `<div class="chat-bubble assistant"><strong>VIDE IT ai:</strong><br>${escapeHtml(data.answer)}</div>`;
+                chat.innerHTML += `<div class="chat-bubble assistant"><strong>RAG Dashboard:</strong><br>${escapeHtml(data.answer)}</div>`;
                 if (data.sources && data.sources.length) {{
                     chat.innerHTML += `<div class="chat-bubble system">Sources: ${{data.sources.map(s => s.title || s.filename).join(', ')}}</div>`;
                 }}
@@ -460,7 +460,7 @@ async def dashboard(request: Request):
             try {{
                 const r = await fetch(API + '/health');
                 const data = await r.json();
-                document.getElementById('statModel').textContent = data.model || 'vide-ai';
+                document.getElementById('statModel').textContent = data.model || 'rag-assistant';
                 document.getElementById('statDocs').textContent = data.documents_indexed || 0;
                 document.getElementById('statChunks').textContent = data.documents_indexed || 0;
             }} catch(e) {{}}
@@ -523,7 +523,7 @@ async def query(body: Query, request: Request):
     metas = res.get("metadatas", [[]])[0]
     dists = res.get("distances", [[]])[0] if "distances" in res else []
     ctx = "\n\n---\n\n".join(docs)
-    prompt = f"You are VIDE IT ai. Use the following document excerpts to answer. If not found, say so.\n\nCONTEXT:\n{ctx}\n\nQUESTION: {body.question}\nANSWER:"
+    prompt = f"You are RAG Dashboard. Use the following document excerpts to answer. If not found, say so.\n\nCONTEXT:\n{ctx}\n\nQUESTION: {body.question}\nANSWER:"
     async with httpx.AsyncClient(timeout=180) as cli:
         resp = await cli.post(f"{OLLAMA_URL}/api/generate", json={"model": MODEL, "prompt": prompt, "stream": False, "options": {"num_ctx": 65536}})
         out = resp.json()

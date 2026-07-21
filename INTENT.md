@@ -9,7 +9,7 @@
 
 ## What This System Does
 
-**AIStack** is a Docker Compose-based self-hosted AI infrastructure deployment. It provides a CPU-first base stack (SearXNG, Camofox, Obsidian, Qdrant, Honcho) plus a document RAG dashboard (VIDE IT ai), designed to be the operational backbone for Hermes Agent and team-facing AI services.
+**AIStack** is a Docker Compose-based self-hosted AI infrastructure deployment. It offers a CPU-first base stack (SearXNG, Camofox, Obsidian, Qdrant, Honcho) plus a document RAG dashboard (RAG Dashboard), designed to be the operational backbone for Hermes Agent and team-facing AI services.
 
 ### Current Services (defined in `docker-compose.yml`)
 
@@ -22,7 +22,7 @@
 | **Honcho DB** | — | PostgreSQL + pgvector backend for Honcho's long-term memory. |
 | **Honcho Redis** | — | Redis cache/queue for Honcho. |
 | **Honcho API** | 8081 | Shared long-term memory layer. Namespaced per-user, backed by PostgreSQL + pgvector + Redis. |
-| **VIDE IT ai** | 8123 | Document RAG dashboard. FastAPI + ChromaDB + Sentence Transformers + Ollama. Upload documents, ask questions, get context-grounded answers. |
+| **RAG Dashboard** | 8123 | Document RAG dashboard. FastAPI + ChromaDB + Sentence Transformers + Ollama. Upload documents, ask questions, get context-grounded answers. |
 
 ### Planned / Configured but Not Yet in Compose File
 
@@ -62,14 +62,14 @@ All ports are reachable only over the mesh (Mesh-VPN). Caddy binds to the Mesh-V
 JorahOne needed a **reproducible, single-command AI infrastructure stack** that could run on a single consumer-grade GPU (GTX 3060, 12 GB VRAM) without cloud dependencies. The requirements were:
 
 1. **Two-tier inference** — An always-on agent backend (Hermes) that never goes cold, plus an on-demand team backend that doesn't permanently consume VRAM.
-2. **Unified API surface** — Downstream services shouldn't care which engine answers. LiteLLM provides a single OpenAI-compatible endpoint.
+2. **Unified API surface** — Downstream services shouldn't care which engine answers. LiteLLM offers a single OpenAI-compatible endpoint.
 3. **Private infrastructure** — No data leaves the mesh. Search (SearXNG), browsing (Camofox), memory (Honcho), and notes (Obsidian) are all self-hosted.
 4. **Cost visibility** — CostForge tracks inference spend across Hermes, OpenRouter, and Telegram.
-5. **Document RAG** — VIDE IT ai provides a simple document Q&A portal for non-technical team members.
+5. **Document RAG** — RAG Dashboard offers a simple document Q&A portal for non-technical team members.
 
 ### Why Existing Tools Were Insufficient
 
-- **Cloud LLM providers** — Cost-prohibitive for continuous agent use, and data privacy concerns.
+- **Cloud LLM sources** — Cost-prohibitive for continuous agent use, and data privacy concerns.
 - **Raw llama.cpp / Ollama** — No unified routing, no team UI, no memory layer, no cost tracking. Each tool solves one piece but requires manual integration.
 - **Existing self-hosted stacks** — Either required multiple machines, assumed unlimited VRAM, or lacked the two-tier always-on + on-demand pattern needed for a single-GPU setup.
 - **No off-the-shelf stack** combined SearXNG + Camofox + Honcho + Qdrant + Obsidian + CostForge + LiteLLM + dual inference into one `docker compose up` command.
@@ -78,7 +78,7 @@ JorahOne needed a **reproducible, single-command AI infrastructure stack** that 
 
 The need to run a **persistent Hermes agent** (the JorahOne AI operations layer) alongside a **team-facing chat interface** (Open WebUI) on a single machine with limited VRAM. The VRAM contention problem — Hermes needs ~9.2 GB always-on, leaving only ~2.8 GB for the team model — required the cold-load / idle-unload pattern for Ollama, which no existing stack addressed.
 
-The initial commit (`d9d1240`) was a three-way merge: **StackDeploy** (the CPU base stack from `OneByJorah/StackDeploy`) + **AIStack** (the GPU inference layer) + **vid-dashboard** (the document RAG app). This merge history explains why the GPU services are configured but not yet wired into the compose file — the merge brought together the pieces, but the full integration is still in progress.
+The initial commit (`d9d1240`) was a three-way merge: **StackDeploy** (the CPU base stack from `OneByJorah/StackDeploy`) + **AIStack** (the GPU inference layer) + **rag-dashboard** (the document RAG app). This merge history explains why the GPU services are configured but not yet wired into the compose file — the merge brought together the pieces, but the full integration is still in progress.
 
 ### Ecosystem Fit
 
@@ -86,9 +86,9 @@ This stack is the **operational backbone** for JorahOne's AI infrastructure:
 
 - **Hermes Agent** (the JorahOne AI operations layer) uses llama-server as its inference backend, SearXNG for web search, Camofox for browser automation, Qdrant for vector storage, and Obsidian for note-taking.
 - **IT team** uses Open WebUI + Ollama for ad-hoc LLM access.
-- **CostForge** (a separate `OneByJorah/CostForge` repo) provides cost visibility across the entire inference pipeline.
-- **VIDE IT ai** provides a document-grounded Q&A portal for the broader team.
-- **Honcho** provides persistent, namespaced memory that both Hermes and the team can leverage.
+- **CostForge** (a separate `OneByJorah/CostForge` repo) offers cost visibility across the entire inference pipeline.
+- **RAG Dashboard** gives a document-grounded Q&A portal for the broader team.
+- **Honcho** gives persistent, namespaced memory that both Hermes and the team can leverage.
 
 The stack is the **deployment target** for multiple OneByJorah repositories (CostForge, Honcho adapters, Hermes skills) and the **reference architecture** for how JorahOne runs AI in production.
 
@@ -98,8 +98,8 @@ The stack is the **deployment target** for multiple OneByJorah repositories (Cos
 
 **Classification: BETA** (not yet fully PRODUCTION)
 
-Evidence:
-- **CPU base stack is operational** — SearXNG, Camofox, Obsidian, Qdrant, Honcho, and VIDE IT ai are all wired into `docker-compose.yml` with health checks, restart policies, and init scripts.
+Proof:
+- **CPU base stack is operational** — SearXNG, Camofox, Obsidian, Qdrant, Honcho, and RAG Dashboard are all wired into `docker-compose.yml` with health checks, restart policies, and init scripts.
 - **GPU inference layer is incomplete** — llama-server, Ollama, LiteLLM, Open WebUI, CostForge, and Caddy have config files and Dockerfiles but are **not in the compose file**. The stack cannot be deployed as a full AI stack with a single `docker compose up -d`.
 - **Health checks** exist on all compose services (SearXNG, Camofox, Obsidian, Honcho DB, Honcho Redis, Honcho).
 - **Smoke tests** exist (`tests/smoke.sh`) but reference hardcoded paths (`/home/<user>/StackDeploy`) and services (Chrome CDP on 9222) that don't match the current compose file.
@@ -107,13 +107,13 @@ Evidence:
 - **Security audit** — One audit commit (`85b87f9`) sanitized email and path references.
 - **Community files** — CODE_OF_CONDUCT, CONTRIBUTING, SECURITY, LICENSE (MIT) all present.
 - **CHANGELOG** — v1.0.0 tagged (2026-07-04).
-- **No live deployment evidence** — No deploy manifests or production deployment scripts in the compose file.
+- **No live deployment proof** — No deploy manifests or production deployment scripts in the compose file.
 
 Sub-classifications:
 - **Automation** — Bootstrap scripts, health checks, smoke tests, Hermes skill integration.
 - **Security** — Mesh-VPN-only networking pattern (documented), secrets via `.env`, SearXNG configured as non-public instance.
 - **Observability** — Health check scripts, smoke tests, Docker health checks on every service.
-- **Experimental** — VIDE IT ai dashboard (simple RAG, early-stage), Camofox browser automation.
+- **Experimental** — RAG Dashboard (simple RAG, early-stage), Camofox browser automation.
 
 ---
 
@@ -125,8 +125,8 @@ Sub-classifications:
 4. **Honcho over mem0** — Deliberate choice to stay on Honcho for namespaced long-term memory.
 5. **CostForge built from source** — Cloned fresh from `OneByJorah/CostForge` at build time, no upstream Dockerfile required. (Dockerfile exists, service not in compose.)
 6. **CPU-first base stack** — The StackDeploy component (SearXNG, Camofox, Obsidian, Qdrant, Honcho) runs on CPU-only hosts. GPU is only needed for the inference backends.
-7. **VIDE IT ai as separate container** — Document RAG is a standalone FastAPI app with its own ChromaDB + Sentence Transformers pipeline, not integrated into the main inference path.
-8. **Three-way merge origin** — The repo was created by merging StackDeploy (CPU base) + AIStack (GPU layer) + vid-dashboard (RAG). This explains the current state where GPU services are configured but not yet in the compose file.
+7. **RAG Dashboard as separate container** — Document RAG is a standalone FastAPI app with its own ChromaDB + Sentence Transformers pipeline, not integrated into the main inference path.
+8. **Three-way merge origin** — The repo was created by merging StackDeploy (CPU base) + AIStack (GPU layer) + rag-dashboard (RAG). This explains the current state where GPU services are configured but not yet in the compose file.
 
 ---
 
@@ -134,7 +134,7 @@ Sub-classifications:
 
 ```
 |AIStack/
-├── docker-compose.yml              # CPU base stack + vid-dashboard (8 services)
+├── docker-compose.yml              # CPU base stack + rag-dashboard (8 services)
 ├── .env.example                    # Environment variable template
 ├── .gitignore
 ├── .gitignore.merge                # MERGE ARTIFACT — leftover from three-way merge
@@ -176,8 +176,8 @@ Sub-classifications:
 ├── tests/
 │   └── smoke.sh                    # Integration smoke test (hardcoded paths)
 │
-├── vid-dashboard/
-│   ├── app.py                      # VIDE IT ai FastAPI backend (541 lines)
+├── rag-dashboard/
+│   ├── app.py                      # RAG Dashboard FastAPI backend (541 lines)
 │   ├── dashboard.html              # Jinja2 dashboard template
 │   ├── Dockerfile                  # Container build
 │   └── requirements.txt           # Python dependencies
@@ -223,15 +223,15 @@ Sub-classifications:
 
 ### Discrepancies Between INTENT.md and Actual Code
 
-1. **GPU inference services not in compose file** — The previous INTENT.md described llama-server, Ollama, LiteLLM, Open WebUI, CostForge, and Caddy as active services. In reality, these have config files and Dockerfiles but are **not wired into `docker-compose.yml`**. The compose file only contains the CPU base stack (SearXNG, Camofox, Obsidian, Qdrant, Honcho) + vid-dashboard.
+1. **GPU inference services not in compose file** — The previous INTENT.md described llama-server, Ollama, LiteLLM, Open WebUI, CostForge, and Caddy as active services. In reality, these have config files and Dockerfiles but are **not wired into `docker-compose.yml`**. The compose file only contains the CPU base stack (SearXNG, Camofox, Obsidian, Qdrant, Honcho) + rag-dashboard.
 
 2. **Caddyfile references nonexistent services** — `caddy/Caddyfile` reverse-proxies to `open-webui:8080`, `litellm:4000`, `honcho-api:8000`, `llama-server:8080`, `costforge:8000` — none of these service names exist in the compose file. `honcho-api` is named `honcho` in compose, and its port is 8081, not 8000.
 
-3. **README.md port mismatch** — The main `README.md` lists browser-search on port 3000, CostForge on 5000, and vid-dashboard on 5001. The actual compose file has no browser-search service, no CostForge service, and vid-dashboard on 8123.
+3. **README.md port mismatch** — The main `README.md` lists browser-search on port 3000, CostForge on 5000, and rag-dashboard on 5001. The actual compose file has no browser-search service, no CostForge service, and rag-dashboard on 8123.
 
 4. **Smoke test path mismatch** — `tests/smoke.sh` uses hardcoded paths (`/home/<user>/StackDeploy`) and references Chrome CDP on port 9222 (no such service in compose).
 
-5. **Dependabot ecosystem mismatch** — Dependabot is configured for `pip` and `npm` at root `/`, but there is no `requirements.txt` or `package.json` at the repo root. The `pip` config should point to `vid-dashboard/` and the `npm` config to `browser-search/`. These are template vestiges from the StackDeploy upstream.
+5. **Dependabot ecosystem mismatch** — Dependabot is configured for `pip` and `npm` at root `/`, but there is no `requirements.txt` or `package.json` at the repo root. The `pip` config should point to `rag-dashboard/` and the `npm` config to `browser-search/`. These are template vestiges from the StackDeploy upstream.
 
 6. **`.gitignore.merge`** — This file is a merge artifact from the three-way merge. It should be cleaned up.
 
@@ -239,7 +239,7 @@ Sub-classifications:
 
 ### Merge History
 
-The initial commit (`d9d1240`) was a three-way merge: **StackDeploy** (CPU base stack) + **AIStack** (GPU inference layer) + **vid-dashboard** (document RAG). This explains the current state — the GPU services are configured (Caddyfile, LiteLLM config, CostForge Dockerfile) but not yet integrated into the compose file. The repo is in a transitional state between the CPU-only base and the full AI stack.
+The initial commit (`d9d1240`) was a three-way merge: **StackDeploy** (CPU base stack) + **AIStack** (GPU inference layer) + **rag-dashboard** (document RAG). This explains the current state — the GPU services are configured (Caddyfile, LiteLLM config, CostForge Dockerfile) but not yet integrated into the compose file. The repo is in a transitional state between the CPU-only base and the full AI stack.
 
 ### Security Audit
 

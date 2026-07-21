@@ -54,7 +54,7 @@ Prefix any wikilink with `!` to embed its content inline:
 ![[document.pdf#page=3]]               Embed PDF page
 ```
 
-See [EMBEDS.md](references/EMBEDS.md) for audio, video, search embeds, and external images.
+See [EMBEDS.md](references/EMBEDS.md) for audio, media, search embeds, and external images.
 
 ## Callouts
 

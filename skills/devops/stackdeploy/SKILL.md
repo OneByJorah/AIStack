@@ -9,7 +9,7 @@ metadata:
 
 # StackDeploy Integration
 
-StackDeploy provides local AI-friendly infrastructure: SearXNG for search, Camofox for browser automation, Obsidian for notes, Qdrant for vector storage, and optional Honcho/llama.cpp. This skill helps you install, configure, and use StackDeploy with Hermes.
+StackDeploy gives local AI-friendly infrastructure: SearXNG for search, Camofox for browser automation, Obsidian for notes, Qdrant for vector storage, and optional Honcho/llama.cpp. This skill helps you install, configure, and use StackDeploy with Hermes.
 
 ## Prerequisites
 - Docker & Docker Compose

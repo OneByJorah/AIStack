@@ -28,12 +28,12 @@ This is a CLI/backend-only tool. No screenshots available.
 
 ## ✨ Features
 
-- **CPU Base Stack** — SearXNG, Camofox, Obsidian, Qdrant, Honcho, and VIDE IT ai in one Docker Compose deployment
+- **CPU Base Stack** — SearXNG, Camofox, Obsidian, Qdrant, Honcho, and RAG Dashboard in one Docker Compose deployment
 - **Private Search** — SearXNG metasearch engine with privacy-first design
 - **Vector Storage** — Qdrant for semantic memory and embeddings
 - **Browser Automation** — Camofox browser automation with REST API
 - **Long-Term Memory** — Honcho namespaced memory layer (PostgreSQL + pgvector + Redis)
-- **Document RAG** — VIDE IT ai dashboard for document Q&A with ChromaDB + Sentence Transformers
+- **Document RAG** — RAG Dashboard for document Q&A with ChromaDB + Sentence Transformers
 - **Obsidian Integration** — Markdown-backed note-taking via web UI
 - **Planned: GPU Inference Layer** — llama-server, Ollama, LiteLLM, Open WebUI, CostForge, Caddy (configs exist, coming soon)
 
@@ -50,6 +50,7 @@ git clone https://github.com/OneByJorah/AIStack.git
 cd AIStack
 cp .env.example .env
 # Edit .env with your configuration
+mkdir -p ~/.rag-ai-data/documents
 docker compose up -d
 ```
 
@@ -64,7 +65,7 @@ docker compose up -d
 | **Obsidian** | 8083 | Markdown-backed note-taking |
 | **Qdrant** | 6333 | Vector database for embeddings |
 | **Honcho API** | 8081 | Long-term memory layer (namespaced) |
-| **VIDE IT ai** | 8123 | Document RAG dashboard |
+| **RAG Dashboard** | 8123 | Document RAG dashboard |
 
 ### Planned Services (configs exist, not yet wired)
 
@@ -87,7 +88,7 @@ docker compose up -d
 │       ──▶ Obsidian (8083) ── Note-taking             │
 │       ──▶ Qdrant (6333)   ── Vector store            │
 │       ──▶ Honcho (8081)   ── Long-term memory       │
-│       ──▶ VIDE IT ai (8123) ── Document RAG         │
+│       ──▶ RAG Dashboard (8123) ── Document RAG         │
 │                                                      │
 │  ┌──────────────────────────────────────────────┐    │
 │  │  Planned: GPU Inference Layer (coming soon)  │    │
@@ -107,6 +108,8 @@ docker compose up -d
 | `HONCHO_DB_PASSWORD` | Postgres password for Honcho DB | Yes |
 | `CAMOFOX_API_KEY` | API key for Camofox browser | Optional |
 | `CAMOFOX_ADMIN_KEY` | Admin key for Camofox browser | Optional |
+| `RAG_MODEL` | Ollama model used by the RAG dashboard | Optional (default: `rag-assistant`) |
+| `CORS_ORIGINS` | Allowed CORS origins for the RAG dashboard | Optional |
 
 ## 🔒 Security
 

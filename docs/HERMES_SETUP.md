@@ -4,8 +4,8 @@
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/OneByJorah/StackDeploy.git
-cd StackDeploy
+git clone https://github.com/OneByJorah/AIStack.git
+cd AIStack
 
 # 2. Environment
 cp .env.example .env
@@ -20,13 +20,13 @@ hermes restart
 
 ## Hermes config
 
-Point Hermes at the free cloud provider of your choice, plus the local services above:
+Point Hermes at the free cloud source of your choice, plus the local services above:
 
 ```yaml
 model:
   base_url: https://openrouter.ai/api/v1
-  default: <provider-model-id>
-  provider: openrouter
+  default: <source-model-id>
+  source: openrouter
   api_key: <OPENROUTER_API_KEY>
 
 web:
@@ -38,7 +38,7 @@ browser:
 
 obsidian:
   enabled: true
-  vault_path: /home/<user>/ObsidianVault
+  vault_path: ${OBSIDIAN_VAULT_PATH}
 ```
 
 For local Obsidian, open the vault folder in the desktop app. Hermes reads and writes notes directly through the Obsidian skill.

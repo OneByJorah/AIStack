@@ -20,7 +20,7 @@ By participating, you are expected to uphold this code.
 ### Suggesting Enhancements
 
 - Open a new GitHub Issue with the enhancement tag.
-- Provide a clear explanation of why this enhancement would be useful.
+- Give a clear explanation of why this enhancement would be useful.
 
 ### Pull Requests
 
