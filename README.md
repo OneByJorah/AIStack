@@ -128,3 +128,7 @@ MIT © Jhonattan L. Jimenez
   <p>🧠 Your AI infrastructure, one command away</p>
   <p><a href="https://github.com/OneByJorah">@OneByJorah</a></p>
 </div>
+
+## 📧 Contact
+
+Questions? Reach out at [info@jorahone.com](mailto:info@jorahone.com).
