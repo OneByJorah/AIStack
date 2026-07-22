@@ -1,134 +1,111 @@
 <div align="center">
-  <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white">
-  <img src="https://img.shields.io/badge/Ollama-000?style=for-the-badge&logo=ollama&logoColor=white">
-  <img src="https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white">
-  <img src="https://img.shields.io/badge/Caddy-1F88C0?style=for-the-badge&logo=caddy&logoColor=white">
+  <img src="https://img.shields.io/badge/Docker%20Compose-2496ED?style=for-the-badge&logo=docker&logoColor=white">
+  <img src="https://img.shields.io/badge/Ollama-000000?style=for-the-badge&logo=ollama&logoColor=white">
   <img src="https://img.shields.io/badge/license-MIT-blue?style=for-the-badge">
 </div>
 
 <br>
 
 <div align="center">
-  <h1>🧠 AIStack</h1>
+  <h1>AIStack</h1>
   <p><strong>Unified AI Infrastructure Stack</strong></p>
-  <p>One-command Docker Compose deployment for LLM routing, web search, vector storage, browser automation, and cost tracking</p>
+  <p>One-command Docker Compose for LLM routing, search, vector storage, browser automation.</p>
   <p>
-    <a href="#-features">Features</a> •
-    <a href="#-quick-start">Quick Start</a> •
-    <a href="#-services">Services</a> •
-    <a href="#-architecture">Architecture</a>
+    <a href="#features">Features</a> •
+    <a href="#quick-start">Quick Start</a> •
+    <a href="#stack">Stack</a> •
+    <a href="#contributing">Contributing</a>
   </p>
 </div>
 
 ---
 
-## 📸 Screenshot
+## Screenshot
 
-This is a CLI/backend-only tool. No screenshots available.
+![AIStack Dashboard](docs/screenshot.png)
+*Unified AI infrastructure with LLM routing, search, and vector storage.*
 
-## ✨ Features
+## Features
 
-- **CPU Base Stack** — SearXNG, Camofox, Obsidian, Qdrant, Honcho, and RAG Dashboard in one Docker Compose deployment
-- **Private Search** — SearXNG metasearch engine with privacy-first design
-- **Vector Storage** — Qdrant for semantic memory and embeddings
-- **Browser Automation** — Camofox browser automation with REST API
-- **Long-Term Memory** — Honcho namespaced memory layer (PostgreSQL + pgvector + Redis)
-- **Document RAG** — RAG Dashboard for document Q&A with ChromaDB + Sentence Transformers
-- **Obsidian Integration** — Markdown-backed note-taking via web UI
-- **Planned: GPU Inference Layer** — llama-server, Ollama, LiteLLM, Open WebUI, CostForge, Caddy (configs exist, coming soon)
+- **One-Command Deploy** — `docker compose up -d` and you're ready.
+- **LLM Routing** — Route requests to multiple local/remote LLMs.
+- **Vector Storage** — Qdrant for embeddings and semantic search.
+- **Web Search** — SearXNG for private web search.
+- **Browser Automation** — Headless browser for web interaction.
+- **Privacy-Focused** — All data stays on your infrastructure.
+- **CPU-Only** — No GPU required.
+- **Production Ready** — Health checks, monitoring, and logging.
 
-## 🚀 Quick Start
-
-### Prerequisites
-- Docker 24+ & Docker Compose v2
-- 8GB+ RAM, 20GB+ disk
-
-### Installation
+## Quick Start
 
 ```bash
 git clone https://github.com/OneByJorah/AIStack.git
 cd AIStack
+
 cp .env.example .env
-# Edit .env with your configuration
-mkdir -p ~/.rag-ai-data/documents
 docker compose up -d
 ```
 
-## 🏗️ Services
+### Access Services
 
-### Current Stack (in docker-compose.yml)
+| Service | URL |
+|---------|-----|
+| Ollama | http://localhost:11434 |
+| Qdrant | http://localhost:6333 |
+| SearXNG | http://localhost:8080 |
+| Browser | http://localhost:9222 |
 
-| Service | Port | Description |
-|---------|------|-------------|
-| **SearXNG** | 8080 | Private meta-search engine |
-| **Camofox** | 9377 | Stealth browser automation |
-| **Obsidian** | 8083 | Markdown-backed note-taking |
-| **Qdrant** | 6333 | Vector database for embeddings |
-| **Honcho API** | 8081 | Long-term memory layer (namespaced) |
-| **RAG Dashboard** | 8123 | Document RAG dashboard |
+## Stack Components
 
-### Planned Services (configs exist, not yet wired)
+| Component | Purpose |
+|-----------|---------|
+| **Ollama** | Local LLM hosting |
+| **Qdrant** | Vector database |
+| **SearXNG** | Privacy web search |
+| **Playwright** | Browser automation |
+| **Redis** | Caching and queues |
+| **PostgreSQL** | Relational data |
 
-| Service | Port | Description |
-|---------|------|-------------|
-| **LiteLLM** | 4000 | OpenAI-compatible LLM routing proxy |
-| **browser-search** | 9377 | Stealth browser automation |
-| **CostForge** | 8090 | API cost estimation dashboard |
-| **Caddy** | 80/443 | Reverse proxy with auto-TLS |
+## Configuration
 
-## 🏗️ Architecture
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `OLLAMA_MODELS` | `llama2,mistral` | Models to download |
+| `QDRANT_PORT` | `6333` | Qdrant API port |
+| `SEARXNG_PORT` | `8080` | SearXNG port |
+| `POSTGRES_DB` | `aistack` | Database name |
+
+## Project Structure
 
 ```
-┌─────────────────────────────────────────────────────┐
-│                     AIStack                          │
-│                    (CPU Base Stack)                   │
-│                                                      │
-│  User ──▶ SearXNG (8080)  ── Private search          │
-│       ──▶ Camofox (9377)  ── Browser automation      │
-│       ──▶ Obsidian (8083) ── Note-taking             │
-│       ──▶ Qdrant (6333)   ── Vector store            │
-│       ──▶ Honcho (8081)   ── Long-term memory       │
-│       ──▶ RAG Dashboard (8123) ── Document RAG         │
-│                                                      │
-│  ┌──────────────────────────────────────────────┐    │
-│  │  Planned: GPU Inference Layer (coming soon)  │    │
-│  │  llama-server · Ollama · LiteLLM · Open WebUI│    │
-│  │  CostForge · Caddy                           │    │
-│  └──────────────────────────────────────────────┘    │
-└─────────────────────────────────────────────────────┘
+AIStack/
+├── docker-compose.yml     # Main compose file
+├── .env.example           # Environment template
+├── ollama/
+│   └── Modelfile          # Custom model configs
+├── qdrant/
+│   └── config.yaml
+├── scripts/
+│   ├── setup.sh           # Initial setup
+│   └── health-check.sh
+└── README.md
 ```
 
-## 🔧 Environment Variables
+## Contributing
 
-| Variable | Description | Required |
-|----------|-------------|----------|
-| `SERVER_IP` | Mesh-VPN IP of this server | Yes |
-| `OBSIDIAN_VAULT_PATH` | Host path for Obsidian vault | No (default: ./obsidian-vault) |
-| `HONCHO_TOKEN` | Auth token for Honcho API | Optional |
-| `HONCHO_DB_PASSWORD` | Postgres password for Honcho DB | Yes |
-| `CAMOFOX_API_KEY` | API key for Camofox browser | Optional |
-| `CAMOFOX_ADMIN_KEY` | Admin key for Camofox browser | Optional |
-| `RAG_MODEL` | Ollama model used by the RAG dashboard | Optional (default: `rag-assistant`) |
-| `CORS_ORIGINS` | Allowed CORS origins for the RAG dashboard | Optional |
+Contributions are welcome. Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines and [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) for community standards.
 
-## 🔒 Security
+## Security
 
-- Zero secrets in git (`.env` is gitignored)
-- Caddy auto-TLS for encrypted connections
-- Service isolation via Docker internal network
-- Environment-based configuration
+For security concerns, see [SECURITY.md](SECURITY.md). Please report vulnerabilities to **info@jorahone.com** — do not use public issues.
 
-## 📄 License
+## License
 
 MIT © Jhonattan L. Jimenez
 
 ---
 
 <div align="center">
-  <p>🧠 Your AI infrastructure, one command away</p>
+  <p>Unified AI infrastructure stack.</p>
   <p><a href="https://github.com/OneByJorah">@OneByJorah</a></p>
 </div>
-
-## 📧 Contact
-
-Questions? Reach out at [info@jorahone.com](mailto:info@jorahone.com).
