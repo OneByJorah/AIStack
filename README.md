@@ -1,29 +1,24 @@
 <div align="center">
-  <img src="https://img.shields.io/badge/Docker%20Compose-2496ED?style=for-the-badge&logo=docker&logoColor=white">
-  <img src="https://img.shields.io/badge/Ollama-000000?style=for-the-badge&logo=ollama&logoColor=white">
-  <img src="https://img.shields.io/badge/license-MIT-blue?style=for-the-badge">
-</div>
 
-<br>
+![AIStack banner](docs/assets/banner.svg)
 
-<div align="center">
-  <h1>AIStack</h1>
-  <p><strong>Unified AI Infrastructure Stack</strong></p>
-  <p>One-command Docker Compose for LLM routing, search, vector storage, browser automation.</p>
-  <p>
-    <a href="#features">Features</a> •
-    <a href="#quick-start">Quick Start</a> •
-    <a href="#stack">Stack</a> •
-    <a href="#contributing">Contributing</a>
-  </p>
+# AIStack
+
+Unified AI infrastructure stack
+
+![License](https://img.shields.io/badge/license-MIT-brightgreen)
+![Language](https://img.shields.io/badge/language-JavaScript-blue)
 </div>
 
 ---
 
-## Screenshot
+<p align="center">
+  <img src="docs/assets/screenshot.png" alt="AIStack preview" width="90%">
+</p>
 
-![AIStack Dashboard](docs/screenshot.png)
-*Unified AI infrastructure with LLM routing, search, and vector storage.*
+<br>
+
+---
 
 ## Features
 
@@ -105,7 +100,18 @@ MIT © Jhonattan L. Jimenez
 
 ---
 
-<div align="center">
-  <p>Unified AI infrastructure stack.</p>
-  <p><a href="https://github.com/OneByJorah">@OneByJorah</a></p>
-</div>
+## 🤝 Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md). All contributions follow the [Code of Conduct](CODE_OF_CONDUCT.md).
+
+## 🔒 Security
+
+Found a vulnerability? Please follow our [Security Policy](SECURITY.md) and report privately to `security@jorahone.com`.
+
+## 📄 License
+
+[MIT License](LICENSE) © Jhonattan L. Jimenez (OneByJorah)
+
+---
+
+<p align="center">Built with 🌴 by <a href="https://github.com/OneByJorah">OneByJorah</a> · <a href="https://jorahone.com">jorahone.com</a></p>
