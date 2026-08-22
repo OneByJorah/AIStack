@@ -161,7 +161,7 @@ Agent-readable skills for working with Obsidian vaults.
 | `obsidian-cli` | Interact with vault via `obsidian` CLI |
 | `defuddle` | Extract clean markdown from URLs |
 
-These skills are available at `obsidian-skills/skills/`. If your agent loads skills from a directory, point it there. For Obsidian CLI, ensure the desktop app is installed and accessible on the host.
+These skills are available at `obsidian-skills/<skill-name>/` (e.g. `obsidian-skills/obsidian-markdown/SKILL.md`). If your agent loads skills from a directory, point it there. For Obsidian CLI, ensure the desktop app is installed and accessible on the host.
 
 ## CI/CD & Deployment
 
@@ -191,12 +191,11 @@ StackDeploy/
 │   ├── scripts/
 │   └── docker/
 ├── obsidian-skills/        # kepano/obsidian-skills agent skills
-│   └── skills/
-│       ├── defuddle/
-│       ├── json-canvas/
-│       ├── obsidian-bases/
-│       ├── obsidian-cli/
-│       └── obsidian-markdown/
+│   ├── defuddle/
+│   ├── json-canvas/
+│   ├── obsidian-bases/
+│   ├── obsidian-cli/
+│   └── obsidian-markdown/
 ├── scripts/
 │   ├── bootstrap.sh
 │   ├── healthcheck.sh

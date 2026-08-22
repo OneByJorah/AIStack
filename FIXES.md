@@ -3,4 +3,4 @@
 ## Changes Made
 
 ### Containerization
-- **Added Dockerfile** — Multi-stage build for production deployment
+- **Added Dockerfile** — nginx-based static image for production deployment

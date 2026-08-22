@@ -1,4 +1,7 @@
 # AIStack — reverse proxy
+# NOTE: optional. Not referenced by docker-compose.yml; run manually, e.g.
+#   docker run --rm -v ./Caddyfile:/etc/caddy/Caddyfile -p 3000-8888:3000-8888 caddy
+# Upstream names must match running containers (adjust to this compose project).
 # Bind these hostnames to your Mesh-VPN machine name / MagicDNS,
 # or replace with your own Mesh-VPN hostname (run `mesh-vpn status` to confirm).
 # TLS is handled by Mesh-VPN itself (mesh-vpn cert) if you front with HTTPS;

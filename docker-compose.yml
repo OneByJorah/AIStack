@@ -95,6 +95,8 @@ services:
     restart: unless-stopped
 
   honcho:
+    # Requires a locally built image: docker build/tag as honcho-repo-api:latest
+    # (not published to a registry). See README-STACKDEPLOY.md.
     image: honcho-repo-api:latest
     container_name: honcho
     ports:
@@ -121,14 +123,19 @@ services:
     container_name: rag-dashboard
     ports:
       - "8123:8123"
+    environment:
+      # app.py stores data under Path.home() (/root in the container)
+      OLLAMA_URL: ${OLLAMA_URL:-http://host.docker.internal:11434}
+      RAG_MODEL: ${RAG_MODEL:-rag-assistant}
+      RAG_ADMIN_PASSWORD: ${RAG_ADMIN_PASSWORD:-}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     volumes:
-      - ~/.rag-ai-data:/app/data
+      - ~/.rag-ai-data:/root/.rag-ai-data
     restart: unless-stopped
 
 volumes:
   searxng-data:
-  camofox-data:
-  obsidian-vault:
   qdrant-data:
   honcho-postgres:
   honcho-redis:

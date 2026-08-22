@@ -47,9 +47,10 @@ def _save_users(u):
 def ensure_admin():
     users = _load_users()
     if "admin" not in users or not users["admin"].get("pw"):
+        admin_pw = os.environ.get("RAG_ADMIN_PASSWORD", "admin")
         users["admin"] = {
             "username": "admin",
-            "pw": _hash("admin"),
+            "pw": _hash(admin_pw),
             "role": "admin",
             "active": True,
             "created_at": datetime.utcnow().isoformat(),

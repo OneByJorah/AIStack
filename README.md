@@ -14,7 +14,7 @@
 </div>
 
 <p align="center">
-  <img src="docs/assets/screenshot.png" alt="AIStack Dashboard" width="90%">
+  <img src="docs/screenshots/dashboard.png" alt="AIStack RAG Dashboard" width="90%">
 </p>
 
 ---
@@ -27,12 +27,16 @@ AIStack is a production-ready **self-hosted AI infrastructure stack** that bring
 
 | Service | Purpose | Port | Status |
 |---------|---------|------|--------|
-| **Ollama** | Local LLM hosting (Llama 3, Mistral, DeepSeek, 100+ models) | `:11434` | ✅ |
 | **Qdrant** | Vector database for semantic search & embeddings | `:6333` | ✅ |
 | **SearXNG** | Private metasearch engine (100+ providers, no tracking) | `:8080` | ✅ |
 | **Camofox** | Stealth browser automation for web agents | `:9377` | ✅ |
 | **Honcho** | Agent memory management (PostgreSQL + Redis) | `:8081` | ✅ |
+| **Obsidian** | Browser-based note vault for agents & humans | `:8083` | ✅ |
 | **RAG Dashboard** | Document Q&A with retrieval-augmented generation | `:8123` | ✅ |
+
+> **LLM layer:** Ollama is *not* shipped in the compose file. Point the RAG
+> Dashboard at any Ollama endpoint via `OLLAMA_URL` (defaults to the host's
+> `:11434`).
 
 ## Quick Start
 
@@ -47,19 +51,22 @@ docker compose up -d
 
 | Service | URL | Credentials |
 |---------|-----|-------------|
-| Ollama API | `http://localhost:11434` | — |
 | Qdrant Dashboard | `http://localhost:6333/dashboard` | — |
 | SearXNG | `http://localhost:8080` | — |
-| RAG Dashboard | `http://localhost:8123` | `admin / admin` |
+| Camofox API | `http://localhost:9377` | `CAMOFOX_API_KEY` (if set) |
+| Honcho API | `http://localhost:8081` | `HONCHO_TOKEN` (if set) |
+| Obsidian | `http://localhost:8083` | — |
+| RAG Dashboard | `http://localhost:8123` | `admin / admin` (change via `RAG_ADMIN_PASSWORD`) |
 
 ## Features
 
 - **One-Command Deploy** — `docker compose up -d` and you're ready
-- **LLM Routing** — Route requests to multiple local/remote LLMs via Ollama
+- **LLM Flexibility** — Point services at any Ollama/OpenAI-compatible endpoint via env vars
 - **Vector Storage** — Qdrant for embeddings and semantic search (ANN indexing)
 - **Private Web Search** — SearXNG aggregates 100+ search providers without tracking
 - **Browser Automation** — Camofox stealth browser for undetectable web interaction
 - **Agent Memory** — Honcho provides persistent context for AI agents
+- **Notes Vault** — Obsidian accessible from the browser at `:8083`
 - **CPU-Only** — Runs entirely without GPU, works on any hardware
 - **Production Ready** — Health checks, monitoring, and structured logging
 
@@ -70,18 +77,17 @@ docker compose up -d
 │                       AIStack                            │
 │                                                          │
 │  ┌───────────┐  ┌───────────┐  ┌───────────┐            │
-│  │  Ollama   │  │  Qdrant   │  │  SearXNG  │            │
-│  │  :11434   │  │  :6333    │  │  :8080    │            │
+│  │  SearXNG  │  │  Qdrant   │  │  Camofox  │            │
+│  │  :8080    │  │  :6333    │  │  :9377    │            │
 │  └─────┬─────┘  └─────┬─────┘  └─────┬─────┘            │
 │        │               │               │                  │
 │  ┌─────▼─────┐  ┌─────▼─────┐  ┌─────▼─────┐            │
-│  │  Honcho   │  │  Camofox  │  │    RAG    │            │
-│  │  :8081    │  │  :9377    │  │ Dashboard │            │
+│  │  Honcho   │  │ Obsidian  │  │    RAG    │            │
+│  │  :8081    │  │  :8083    │  │ Dashboard │            │
 │  └───────────┘  └───────────┘  └───────────┘            │
 │                                                          │
-│  ┌──────────────────────────────────────────────────┐    │
-│  │           Nginx/Caddy Gateway (:443)             │    │
-│  └──────────────────────────────────────────────────┘    │
+│  Optional: Caddy gateway (caddy/Caddyfile, not wired by  │
+│  default) · external LLM endpoint via OLLAMA_URL         │
 └──────────────────────────────────────────────────────────┘
 ```
 
@@ -94,7 +100,7 @@ docker compose up -d
 | **Vector DB** | Qdrant |
 | **Search** | SearXNG |
 | **Browser** | Camofox (Playwright-based) |
-| **Memory** | Honcho + PostgreSQL + Redis |
+| **Memory** | Honcho + PostgreSQL (pgvector) + Redis |
 | **Dashboard** | FastAPI + ChromaDB + Sentence Transformers |
 
 ## Configuration
@@ -103,10 +109,15 @@ See [`.env.example`](.env.example) for all configuration options.
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `OLLAMA_MODELS` | `llama2,mistral` | Models to download on first start |
-| `CAMOFOX_API_KEY` | — | API key for browser automation |
-| `HONCHO_DB_PASSWORD` | `REPLACE_WITH_SECURE_PASSWORD` | PostgreSQL password |
+| `SERVER_IP` | — | Mesh-VPN IP of the host (used by healthcheck) |
+| `OBSIDIAN_VAULT_PATH` | `./obsidian-vault` | Host path for the Obsidian vault |
+| `HONCHO_TOKEN` | — | Honcho API auth token |
+| `HONCHO_DB_PASSWORD` | placeholder — set it! | PostgreSQL password for Honcho |
+| `SEARXNG_SECRET_KEY` | dev fallback — set it! | SearXNG instance secret |
+| `CAMOFOX_API_KEY` / `CAMOFOX_ADMIN_KEY` | — | Camofox auth keys |
+| `OLLAMA_URL` | `http://host.docker.internal:11434` | LLM endpoint for RAG Dashboard |
 | `RAG_MODEL` | `rag-assistant` | Ollama model for RAG queries |
+| `RAG_ADMIN_PASSWORD` | `admin` | RAG Dashboard admin password |
 
 ## Screenshots
 
@@ -131,12 +142,15 @@ AIStack/
 │   └── settings.yml       # SearXNG configuration
 ├── rag-dashboard/         # RAG web application
 │   ├── app.py             # FastAPI backend
-│   ├── dashboard.html     # Frontend
 │   └── Dockerfile
+├── browser-search/        # Camofox/CloakBrowser skill + scripts
+├── caddy/Caddyfile        # Optional reverse proxy (not wired by default)
+├── litellm/config.yaml    # Optional LLM routing config (not wired by default)
 ├── scripts/               # Utility scripts
 │   ├── bootstrap.sh       # Initial setup
 │   ├── healthcheck.sh     # Service health checks
-│   └── init-honcho.sh     # Honcho initialization
+│   ├── init-honcho.sh     # Honcho initialization
+│   └── init-obsidian.sh   # Vault initialization
 ├── docs/                  # Documentation
 └── README.md
 ```
@@ -156,6 +170,13 @@ Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) and [CODE_OF_C
 ## Security
 
 Report vulnerabilities to **info@jorahone.com** — see [SECURITY.md](SECURITY.md).
+
+**Known exposure notes** (by design for mesh-VPN/LAN use — do not expose to the public internet):
+
+- All published ports bind `0.0.0.0`; Qdrant (`:6333`), Obsidian (`:8083`) and SearXNG (`:8080`) have no built-in auth.
+- Honcho ships with `AUTH_USE_AUTH: "false"`; set a `HONCHO_TOKEN` and enable auth before any shared-network deployment.
+- The RAG Dashboard defaults to `admin / admin`; set `RAG_ADMIN_PASSWORD` on first run.
+- Prefer binding ports to `127.0.0.1:` or fronting them with an authenticated proxy in production.
 
 ## License
 

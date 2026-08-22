@@ -6,14 +6,17 @@
 docker compose restart
 ```
 
-## Update model
+## Update images
 
 ```bash
-docker compose up -d llama-server
+docker compose pull && docker compose up -d
 ```
 
 ## Backup Honcho memory
 
 ```bash
-tar czf honcho-backup.tgz /home/<user>/docker/j1-stack-deploy/honcho
+docker run --rm -v ai-stack_honcho-postgres:/data -v "$PWD":/backup alpine \
+  tar czf /backup/honcho-backup.tgz /data
 ```
+
+> Adjust the volume name to match your compose project prefix (`docker volume ls`).
